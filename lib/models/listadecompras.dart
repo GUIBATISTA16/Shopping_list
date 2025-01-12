@@ -20,6 +20,18 @@ class ListaDeCompras {
     };
   }
 
+  factory ListaDeCompras.fromJson(MapEntry<dynamic, dynamic> entry) {
+    final listaData = entry.value as Map<dynamic, dynamic>;
+    return ListaDeCompras(
+      id: entry.key as String,
+      nome: listaData['nome'] as String,
+      createdDate: DateTime.parse(listaData['createdDate'] as String),
+      listItems: (listaData['listItems'] as List<dynamic>)
+          .map((itemData) => Item.fromJson(itemData))
+          .toList()
+    );
+  }
+
   @override
   String toString() {
     return 'ListaDeCompras{id: $id, nome: $nome, createdDate: $createdDate, listItems: $listItems}';

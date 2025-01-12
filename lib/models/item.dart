@@ -19,6 +19,15 @@ class Item {
     };
   }
 
+  factory Item.fromJson(Map<dynamic, dynamic> json) {
+    return Item(
+      nome: json['nome'] as String,
+      tipo: json['tipo'] as String,
+      quantidade: json['quantidade'] as int,
+      comprado: json['comprado'] as bool,
+    );
+  }
+
   @override
   String toString() {
     return 'Item{nome: $nome, tipo: $tipo, quantidade: $quantidade, comprado: $comprado}';

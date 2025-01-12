@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 import 'package:shopping_list/screens/editlist.dart';
+import 'package:shopping_list/service/database.dart';
 import 'package:uuid/v8.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
@@ -21,6 +23,9 @@ class HomePageState extends State<HomePage> {
 
   final _nomeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  List<ListaDeCompras> list = [];
+  ListaDeCompras? selectedList;
 
   @override
   void initState() {
@@ -167,6 +172,100 @@ class HomePageState extends State<HomePage> {
             Expanded(
               child: Container(
                 color: fundoMenus,
+                child: StreamBuilder(
+                  stream: Database.getListasStream(),
+                  builder: (context,snapshot){
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: Loading());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('Nenhuma Lista'));
+                    } else {
+                      List<ListaDeCompras> list = snapshot.data!;
+                      selectedList = list[0];
+                      return ListView.builder(
+                        itemCount: list.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: fundoCards,
+                              child: ListTile(
+                                title: Text(list[index].nome),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(DateFormat('dd/MM/yyyy').format(list[index].createdDate)),
+                                        IconButton(
+                                          onPressed: (){
+
+                                          },
+                                          icon: Icon(Icons.edit)
+                                        ),
+                                      ],
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    ),
+                                    ExpansionTile(
+                                      title: Text('Itens'),
+                                      children: [
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: list[index].listItems.length,
+                                          itemBuilder: (context,itemIndex){
+                                            return Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 30,
+                                                  child: Text(
+                                                    list[index].listItems[itemIndex].quantidade.toString()
+                                                    ,textAlign: TextAlign.left,
+                                                  )
+                                                ),
+                                                Expanded(child: SizedBox()),
+                                                SizedBox(
+                                                    width: 100,
+                                                    child: Text(
+                                                      list[index].listItems[itemIndex].tipo
+                                                      ,textAlign: TextAlign.left,
+                                                    )
+                                                ),
+                                                SizedBox(
+                                                    width: 100,
+                                                    child: Text(
+                                                      list[index].listItems[itemIndex].nome
+                                                      ,textAlign: TextAlign.left,
+                                                    )
+                                                ),
+                                                Expanded(child: SizedBox()),
+                                                Checkbox(
+                                                  checkColor: textoPrincipal,
+                                                  activeColor: principal,
+                                                  value: list[index].listItems[itemIndex].comprado,
+                                                  onChanged: (bool? value) {
+                                                    setState(() {
+                                                      list[index].listItems[itemIndex].comprado = value!;
+                                                    });
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          }
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  }
+                ),
               )
             )
           ],
