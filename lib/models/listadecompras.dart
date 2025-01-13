@@ -10,7 +10,19 @@ class ListaDeCompras {
 
   List<Item> listItems;
 
-  ListaDeCompras({required this.id ,required this.nome,required this.createdDate,required this.listItems});
+  int itensPorComprar;
+
+  ListaDeCompras({required this.id ,required this.nome,required this.createdDate,required this.listItems}) : itensPorComprar = calculateItensPorComprar(listItems);
+
+  static int calculateItensPorComprar(List<Item> listItems){
+    int itensPorComprar = 0;
+    for(Item item in listItems){
+      if(!item.comprado){
+        itensPorComprar++;
+      }
+    }
+    return itensPorComprar;
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -22,13 +34,14 @@ class ListaDeCompras {
 
   factory ListaDeCompras.fromJson(MapEntry<dynamic, dynamic> entry) {
     final listaData = entry.value as Map<dynamic, dynamic>;
+    final listItems = (listaData['listItems'] as List<dynamic>)
+        .map((itemData) => Item.fromJson(itemData))
+        .toList();
     return ListaDeCompras(
       id: entry.key as String,
       nome: listaData['nome'] as String,
       createdDate: DateTime.parse(listaData['createdDate'] as String),
-      listItems: (listaData['listItems'] as List<dynamic>)
-          .map((itemData) => Item.fromJson(itemData))
-          .toList()
+      listItems: listItems,
     );
   }
 

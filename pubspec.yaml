@@ -42,6 +42,8 @@ dependencies:
   flutter_spinkit: any
   intl: any
   uuid: any
+  riverpod: ^2.6.1
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:

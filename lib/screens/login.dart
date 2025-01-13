@@ -8,6 +8,7 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:shopping_list/globais/objectglobal.dart';
 import 'package:shopping_list/screens/homepage.dart';
 import 'package:shopping_list/screens/register_page.dart';
+import 'package:shopping_list/widget/home/wrapperhome.dart';
 import '../firebase_options.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
@@ -45,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       print('Tá logado');
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => Wrapper(),
         ),
       );
     }
@@ -183,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                                               loggedUser = user;
                                               Navigator.of(context).pushReplacement(
                                                 MaterialPageRoute(
-                                                  builder: (context) => HomePage(),
+                                                  builder: (context) => Wrapper(),
                                                 ),
                                               );
                                             }
@@ -237,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
                                     loggedUser = user;
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
-                                        builder: (context) => HomePage(),
+                                        builder: (context) => Wrapper(),
                                       ),
                                     );
                                   }

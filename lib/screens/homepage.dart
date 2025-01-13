@@ -1,43 +1,44 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 import 'package:shopping_list/screens/editlist.dart';
+import 'package:shopping_list/screens/viewlist.dart';
 import 'package:shopping_list/service/database.dart';
+import 'package:shopping_list/widget/home/listadecompraslist.dart';
 import 'package:uuid/v8.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
+import '../globais/objectglobal.dart';
 import '../globais/validator.dart';
 import '../globais/widgetglobal.dart';
+import '../riverpod/selectedlistprovider.dart';
+import '../riverpod/streamprovider.dart';
 import '../widget/loading.dart';
 import '../widget/logout.dart';
 import 'login.dart';
 
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage extends ConsumerStatefulWidget {
+  final PageController pageController;
+
+  const HomePage({super.key, required this.pageController});
+
   @override
   HomePageState createState() => HomePageState();
 }
-class HomePageState extends State<HomePage> {
 
+class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClientMixin<HomePage> {
   final _nomeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  List<ListaDeCompras> list = [];
-  ListaDeCompras? selectedList;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void popupCriarConta(){
+  void popupCriarLista() {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 16.0), // Controla o espaçamento lateral
+          insetPadding: EdgeInsets.symmetric(horizontal: 16.0),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(20.0),
@@ -77,8 +78,8 @@ class HomePageState extends State<HomePage> {
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
+                      errorBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: Colors.red,
                         ),
                       ),
@@ -90,13 +91,19 @@ class HomePageState extends State<HomePage> {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () async {
-                    if(_formKey.currentState!.validate()){
+                    if (_formKey.currentState!.validate()) {
                       String listName = _nomeController.text;
                       _nomeController.text = '';
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (context) => EditLista(
-                                listaDeCompras: ListaDeCompras(id: UuidV8().generate(), nome: listName, createdDate: DateTime.now(), listItems: []))
+                          builder: (context) => EditLista(
+                            listaDeCompras: ListaDeCompras(
+                              id: UuidV8().generate(),
+                              nome: listName,
+                              createdDate: DateTime.now(),
+                              listItems: [],
+                            ),
+                          ),
                         ),
                       );
                     }
@@ -134,143 +141,61 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const TextoPrincipal(text: 'Bem-vindo á sua Shopping List'),
-        backgroundColor: principal,
-      ),
-      backgroundColor: fundoMenusSecondary,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  InkWell(
-                    child: Row(
-                      children: [
-                        Icon(Icons.add_box,color: principal, size: 35,),
-                        Text('Nova Lista',
-                          style: TextStyle(
-                            color: principal,
-                            fontSize: 24
-                          ),
-                        )
-                      ],
+    super.build(context); // Necessário para AutomaticKeepAliveClientMixin
+    final listasAsync = ref.watch(listasStreamProvider);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              InkWell(
+                onTap: popupCriarLista,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.add_box,
+                      color: principal,
+                      size: 35,
                     ),
-                    onTap: () {
-                      popupCriarConta();
-                    },
-                  ),
-                  Expanded(child: Container()),
-                  Logout(size: 35,)
-                ],
+                    Text(
+                      'Nova Lista',
+                      style: TextStyle(
+                        color: principal,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(child: Container()),
+              Logout(size: 35),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Container(
+            color: fundoMenus,
+            child: listasAsync.when(
+              data: (list) {
+                if (list.isEmpty) {
+                  return const Center(child: Text('Nenhuma Lista'));
+                }
+                return ListaDeComprasLista(
+                  list: list,
+                  pageController: widget.pageController,
+                );
+              },
+              loading: () => const Center(child: Loading()),
+              error: (err, stack) => Center(
+                child: Text('Error: $err'),
               ),
             ),
-            Expanded(
-              child: Container(
-                color: fundoMenus,
-                child: StreamBuilder(
-                  stream: Database.getListasStream(),
-                  builder: (context,snapshot){
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: Loading());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('Nenhuma Lista'));
-                    } else {
-                      List<ListaDeCompras> list = snapshot.data!;
-                      selectedList = list[0];
-                      return ListView.builder(
-                        itemCount: list.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: fundoCards,
-                              child: ListTile(
-                                title: Text(list[index].nome),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(DateFormat('dd/MM/yyyy').format(list[index].createdDate)),
-                                        IconButton(
-                                          onPressed: (){
-
-                                          },
-                                          icon: Icon(Icons.edit)
-                                        ),
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    ),
-                                    ExpansionTile(
-                                      title: Text('Itens'),
-                                      children: [
-                                        ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: list[index].listItems.length,
-                                          itemBuilder: (context,itemIndex){
-                                            return Row(
-                                              children: [
-                                                SizedBox(
-                                                  width: 30,
-                                                  child: Text(
-                                                    list[index].listItems[itemIndex].quantidade.toString()
-                                                    ,textAlign: TextAlign.left,
-                                                  )
-                                                ),
-                                                Expanded(child: SizedBox()),
-                                                SizedBox(
-                                                    width: 100,
-                                                    child: Text(
-                                                      list[index].listItems[itemIndex].tipo
-                                                      ,textAlign: TextAlign.left,
-                                                    )
-                                                ),
-                                                SizedBox(
-                                                    width: 100,
-                                                    child: Text(
-                                                      list[index].listItems[itemIndex].nome
-                                                      ,textAlign: TextAlign.left,
-                                                    )
-                                                ),
-                                                Expanded(child: SizedBox()),
-                                                Checkbox(
-                                                  checkColor: textoPrincipal,
-                                                  activeColor: principal,
-                                                  value: list[index].listItems[itemIndex].comprado,
-                                                  onChanged: (bool? value) {
-                                                    setState(() {
-                                                      list[index].listItems[itemIndex].comprado = value!;
-                                                    });
-                                                  },
-                                                )
-                                              ],
-                                            );
-                                          }
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  }
-                ),
-              )
-            )
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -279,4 +204,7 @@ class HomePageState extends State<HomePage> {
     _nomeController.dispose();
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

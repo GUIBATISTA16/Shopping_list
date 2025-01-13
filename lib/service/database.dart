@@ -2,8 +2,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:shopping_list/globais/objectglobal.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 
-import '../models/item.dart';
-
 class Database {
 
   static Future<void> addLista(ListaDeCompras lista) async {
