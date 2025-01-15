@@ -6,6 +6,7 @@ import 'package:shopping_list/service/database.dart';
 import 'package:shopping_list/widget/keepalive.dart';
 
 import '../../globais/colorsglobal.dart';
+import '../../riverpod/loggeduserprovider.dart';
 import '../../riverpod/selectedlistprovider.dart';
 import '../../screens/viewlist.dart';
 import '../standalonewidgets/textoprincipal.dart';
@@ -24,7 +25,8 @@ class _WrapperState extends ConsumerState<Wrapper> {
   @override
   void initState()  {
     super.initState();
-    Database.removeListasCompletas();
+    final uid = ref.read(userUidProvider);
+    Database.removeListasCompletas(uid!);
     _pageController = PageController(initialPage: pageIndex);
   }
 

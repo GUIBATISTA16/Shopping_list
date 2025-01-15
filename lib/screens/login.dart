@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_signin_button/button_builder.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
-import 'package:shopping_list/globais/objectglobal.dart';
 import 'package:shopping_list/screens/homepage.dart';
 import 'package:shopping_list/screens/register_page.dart';
 import 'package:shopping_list/widget/home/wrapperhome.dart';
@@ -13,19 +13,20 @@ import '../firebase_options.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
 import '../globais/validator.dart';
+import '../riverpod/loggeduserprovider.dart';
 import '../service/auth.dart';
 import '../widget/standalonewidgets/containerbordasfinas.dart';
 import '../widget/standalonewidgets/loading.dart';
 import '../widget/standalonewidgets/textoprincipal.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
 
   bool passwordVisible = false;
 
@@ -43,7 +44,8 @@ class _LoginPageState extends State<LoginPage> {
     );
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      loggedUser=user;
+      ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;
+
       print('Tá logado');
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -182,7 +184,8 @@ class _LoginPageState extends State<LoginPage> {
                                               password: _passwordTextController.text,
                                             );
                                             if (user != null) {
-                                              loggedUser = user;
+                                              ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;
+
                                               Navigator.of(context).pushReplacement(
                                                 MaterialPageRoute(
                                                   builder: (context) => Wrapper(),
@@ -236,7 +239,8 @@ class _LoginPageState extends State<LoginPage> {
                                 try {
                                   User? user = await FireAuth.signInWithGoogle();
                                   if (user != null) {
-                                    loggedUser = user;
+                                    ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;
+
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (context) => Wrapper(),

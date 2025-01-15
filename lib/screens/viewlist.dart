@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 
 import '../globais/colorsglobal.dart';
+import '../riverpod/loggeduserprovider.dart';
 import '../riverpod/selectedlistprovider.dart';
 import '../service/database.dart';
 import '../widget/standalonewidgets/textoprincipal.dart';
@@ -21,6 +22,7 @@ class ViewListaDeComprasState extends ConsumerState<ViewListaDeCompras> {
   @override
   Widget build(BuildContext context) {
     final selectedList = ref.watch(selectedListaNotifierProvider);
+    final uid = ref.watch(userUidProvider);
     String formattedDate = DateFormat('dd/MM/yyyy').format(selectedList!.createdDate);
     return Scaffold(
       appBar: AppBar(
@@ -108,7 +110,7 @@ class ViewListaDeComprasState extends ConsumerState<ViewListaDeCompras> {
                             setState(() {
                               selectedList.listItems[itemIndex].comprado = value;
                             });
-                            await Database.addLista(selectedList);
+                            await Database.addLista(selectedList,uid!);
                           },
                         )
                       ],

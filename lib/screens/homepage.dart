@@ -10,7 +10,6 @@ import 'package:shopping_list/widget/home/listadecompraslist.dart';
 import 'package:uuid/v8.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
-import '../globais/objectglobal.dart';
 import '../globais/validator.dart';
 import '../riverpod/selectedlistprovider.dart';
 import '../riverpod/streamprovider.dart';

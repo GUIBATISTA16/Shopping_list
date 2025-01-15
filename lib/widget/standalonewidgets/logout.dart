@@ -1,23 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shopping_list/globais/objectglobal.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../riverpod/loggeduserprovider.dart';
 import '../../screens/login.dart';
 
-class Logout extends StatelessWidget {
+class Logout extends ConsumerWidget {
   final double size;
   const Logout ({super.key, this.size = 24});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
       icon: Icon(Icons.logout),
       color: Colors.red,
       iconSize: size,
       onPressed: () async {
         await FirebaseAuth.instance.signOut();
-        loggedUser = null;
+        ref.read(userUidProvider.notifier).state = null;
+
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => LoginPage(),

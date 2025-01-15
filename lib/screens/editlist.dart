@@ -1,26 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shopping_list/globais/colorsglobal.dart';
 import 'package:shopping_list/globais/functionsglobal.dart';
-import 'package:shopping_list/globais/objectglobal.dart';
 import 'package:shopping_list/models/item.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 import 'package:shopping_list/screens/homepage.dart';
 import 'package:shopping_list/service/database.dart';
 
+import '../riverpod/loggeduserprovider.dart';
 import '../widget/standalonewidgets/backbutton.dart';
 import '../widget/standalonewidgets/textoprincipal.dart';
 
-class EditLista extends StatefulWidget {
+class EditLista extends ConsumerStatefulWidget {
   final ListaDeCompras listaDeCompras;
   const EditLista({super.key, required this.listaDeCompras});
 
   @override
-  State<EditLista> createState() => _EditListaState();
+  ConsumerState<EditLista> createState() => _EditListaState();
 }
 
-class _EditListaState extends State<EditLista> {
+class _EditListaState extends ConsumerState<EditLista> {
 
 
   final List<TextEditingController> _quantityControllers = [];
@@ -83,7 +84,7 @@ class _EditListaState extends State<EditLista> {
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd/MM/yyyy').format(listaAAlterar.createdDate);
-
+    final uid = ref.watch(userUidProvider);
     return Scaffold(
       appBar: AppBar(
         leading: BackButao(color: textoPrincipal),
@@ -99,7 +100,7 @@ class _EditListaState extends State<EditLista> {
           ),
           IconButton(
             onPressed: () async {
-              await Database.removeLista(listaAAlterar.id);
+              await Database.removeLista(listaAAlterar.id,uid!);
               Navigator.pop(context);
             },
             icon: Icon(Icons.delete_forever, color: Colors.red, size: 35,)
@@ -274,12 +275,12 @@ class _EditListaState extends State<EditLista> {
                 lista.listItems.removeWhere((item) => (item.nome.trim() == ""));
                 if(lista.listItems.isEmpty){
                   showCustomSnackBar(context, 'Lista Sem Itens');
-                  await Database.removeLista(listaAAlterar.id);
+                  await Database.removeLista(listaAAlterar.id,uid!);
                   Navigator.pop(context);
                   return;
                 }
                 print(lista);
-                await Database.addLista(lista);
+                await Database.addLista(lista,uid!);
                 showCustomSnackBar(context, 'Lista Guardada');
                 Navigator.pop(context);
               },

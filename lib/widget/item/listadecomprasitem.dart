@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shopping_list/globais/functionsglobal.dart';
-import 'package:shopping_list/globais/objectglobal.dart';
 import 'package:shopping_list/models/item.dart';
 import 'package:shopping_list/models/listadecompras.dart';
+import 'package:shopping_list/riverpod/loggeduserprovider.dart';
 import 'package:shopping_list/screens/viewlist.dart';
 import 'package:shopping_list/service/database.dart';
 
@@ -30,6 +30,7 @@ class _ListadecomprasitemState extends ConsumerState<ListadDeComprasItem> {
   @override
   Widget build(BuildContext context) {
     final selectedList = ref.watch(selectedListaNotifierProvider);
+    final uid = ref.watch(userUidProvider);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
@@ -93,7 +94,7 @@ class _ListadecomprasitemState extends ConsumerState<ListadDeComprasItem> {
                   ref.read(selectedListaNotifierProvider.notifier).selectLista(null);
                 }
                 showCustomSnackBar(context, 'Lista ${widget.lista.nome} removido');
-                Database.removeLista(widget.lista.id);
+                Database.removeLista(widget.lista.id,uid!);
                 return true;
               } else {
                 return false;
@@ -209,7 +210,7 @@ class _ListadecomprasitemState extends ConsumerState<ListadDeComprasItem> {
                                       setState(() {
                                         widget.lista.listItems[itemIndex].comprado = value;
                                       });
-                                      await Database.addLista(widget.lista);
+                                      await Database.addLista(widget.lista,uid!);
                                     },
                                   )
                                 ],
