@@ -97,7 +97,7 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => EditLista(
-                            listaDeCompras: ListaDeCompras(
+                            listaDeCompras: ListaDeCompras(//cria nova lista
                               id: UuidV8().generate(),
                               nome: listName,
                               createdDate: DateTime.now(),
@@ -178,7 +178,7 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
         Expanded(
           child: Container(
             color: fundoMenus,
-            child: listasDeListasDeCompras.when(
+            child: listasDeListasDeCompras.when(//stream de listas
               data: (list) {
                 if (list.isEmpty) {
                   return const Center(child: Text('Nenhuma Lista'));

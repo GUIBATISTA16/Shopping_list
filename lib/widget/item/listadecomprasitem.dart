@@ -33,82 +33,82 @@ class _ListadecomprasitemState extends ConsumerState<ListadDeComprasItem> {
     final uid = ref.watch(userUidProvider);
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        onTap: (){
-          ref.read(selectedListaNotifierProvider.notifier).selectLista(widget.lista);
-          widget.pageController.animateToPage(
-            1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        },
-        child: Dismissible(
-          key: Key(widget.lista.hashCode.toString()),
-          background: Container(
-            color: Colors.green,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Icon(Icons.arrow_circle_right_outlined, size: 34, color: Colors.white,),
-              ),
+      child: Dismissible(
+        key: Key(widget.lista.hashCode.toString()),
+        background: Container(
+          color: Colors.green,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Icon(Icons.arrow_circle_right_outlined, size: 34, color: Colors.white,),
             ),
           ),
-          secondaryBackground: Container(
-            color: Colors.red,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(Icons.delete_forever, size: 34, color: Colors.white,),
-              ),
+        ),
+        secondaryBackground: Container(
+          color: Colors.red,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Icon(Icons.delete_forever, size: 34, color: Colors.white,),
             ),
           ),
-          confirmDismiss: (direction) async{
-            if(direction == DismissDirection.endToStart){//esquerda
-              bool? confirm = await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: fundoMenus,
-                  title: Text('Confirmar Exclusão'),
-                  content: Text('Tem certeza de que deseja excluir a lista "${widget.lista.nome}"?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                      child: Text('Cancelar',style: TextStyle(color: principal),),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                      child: Text('Excluir', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                ),
-              );
+        ),
+        confirmDismiss: (direction) async{
+          if(direction == DismissDirection.endToStart){//esquerda //deslizar para a esquerda para eliminar lista
+            bool? confirm = await showDialog(//confirmar eliminação
+              context: context,
+              builder: (context) => AlertDialog(
+                backgroundColor: fundoMenus,
+                title: Text('Confirmar Exclusão'),
+                content: Text('Tem certeza de que deseja excluir a lista "${widget.lista.nome}"?'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text('Cancelar',style: TextStyle(color: principal),),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text('Excluir', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+            );
 
-              if (confirm == true) {
-                if(selectedList == widget.lista){
-                  ref.read(selectedListaNotifierProvider.notifier).selectLista(null);
-                }
-                showCustomSnackBar(context, 'Lista ${widget.lista.nome} removido');
-                Database.removeLista(widget.lista.id,uid!);
-                return true;
-              } else {
-                return false;
+            if (confirm == true) {
+              if(selectedList?.id == widget.lista.id){//caso a lista selecionada seja eliminada
+                ref.read(selectedListaNotifierProvider.notifier).selectLista(null);//tira a lista selecionada
               }
-            }
-            else if(direction == DismissDirection.startToEnd){//direita
-              ref.read(selectedListaNotifierProvider.notifier).selectLista(widget.lista);
-              widget.pageController.animateToPage(
-                1,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
+              showCustomSnackBar(context, 'Lista ${widget.lista.nome} removido');
+              Database.removeLista(widget.lista.id,uid!);//remove
+              return true;
+            } else {
               return false;
             }
+          }
+          else if(direction == DismissDirection.startToEnd){//direita //deslizar para a direita para selecionar lista
+            ref.read(selectedListaNotifierProvider.notifier).selectLista(widget.lista);
+            widget.pageController.animateToPage(
+              1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+            return false;
+          }
+        },
+        child: InkWell(
+          onTap: (){
+            ref.read(selectedListaNotifierProvider.notifier).selectLista(widget.lista);//seleciona a lista
+            widget.pageController.animateToPage(//vai para a página de ver a lista
+              1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
           },
           child: Card(
             color: Colors.white,

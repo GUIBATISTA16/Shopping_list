@@ -21,14 +21,14 @@ class ViewListaDeCompras extends ConsumerStatefulWidget {
 class ViewListaDeComprasState extends ConsumerState<ViewListaDeCompras> {
   @override
   Widget build(BuildContext context) {
-    final selectedList = ref.watch(selectedListaNotifierProvider);
-    final uid = ref.watch(userUidProvider);
+    final selectedList = ref.watch(selectedListaNotifierProvider);//provider da lista selecionada
+    final uid = ref.watch(userUidProvider);//provider do uid
     String formattedDate = DateFormat('dd/MM/yyyy').format(selectedList!.createdDate);
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
           onPressed: (){
-            widget.pageController.animateToPage(
+            widget.pageController.animateToPage(//volta para a página anterior
               0,
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'colorsglobal.dart';
 
-void showCustomSnackBar(BuildContext context, String text) {
+void showCustomSnackBar(BuildContext context, String text) {//notificação in-app customizavel
   final snackBar = SnackBar(
     content: Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),

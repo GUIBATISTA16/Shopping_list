@@ -21,6 +21,7 @@ class FireAuth {
       await user!.updateProfile(displayName: name);
       await user.reload();
       user = auth.currentUser;
+      await auth.signOut();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -33,27 +34,26 @@ class FireAuth {
     return user;
   }
 
-  static Future<User?> signInWithGoogle() async {
+  static Future<User?> signInWithGoogle() async {//login com o google
     FirebaseAuth auth = FirebaseAuth.instance;
-    // Trigger the authentication flow
+
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     print('googleUser: $googleUser');
 
-    // Obtain the auth details from the request
+
     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
     print('googleAuth: $googleAuth');
 
-    // Create a new credential
+
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
 
     if(googleUser != null){
-      // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       User? user = userCredential.user;
-      await user!.updateProfile(displayName: googleUser!.displayName);
+      await user!.updateProfile(displayName: googleUser.displayName);
       await user.reload();
       user = auth.currentUser;
       return user;
@@ -61,7 +61,7 @@ class FireAuth {
     return null;
   }
 
-  static Future<User?> signInUsingEmailPassword({
+  static Future<User?> signInUsingEmailPassword({//login com email e password
     required String email,
     required String password,
   }) async {

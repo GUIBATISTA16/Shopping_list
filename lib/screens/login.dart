@@ -42,12 +42,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;//caso já esteja loggado
     if (user != null) {
-      ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;
+      ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;//atualiza o logged user
 
       print('Tá logado');
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushReplacement(//vai para a homepage
         MaterialPageRoute(
           builder: (context) => Wrapper(),
         ),
@@ -148,16 +148,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                             TextButton(
                               onPressed: () async {
-                                String oldpass = _passwordTextController.text;
-                                _passwordTextController.text = '111111';
-                                if(_formKey.currentState!.validate()){
+                                String oldpass = _passwordTextController.text;//guarda a password escrita
+                                _passwordTextController.text = '111111';//password "fake" para passar a validação
+                                if(_formKey.currentState!.validate()){//verifica que um email foi escrito
                                   await FirebaseAuth.instance
                                       .sendPasswordResetEmail(email: _emailTextController.text);
-                                  _passwordTextController.text = oldpass;
+                                  _passwordTextController.text = oldpass;//retorna a password antiga
                                   showCustomSnackBar(context, 'Email de redefinição de password enviado');
                                   return;
                                 }
-                                _passwordTextController.text = oldpass;
+                                _passwordTextController.text = oldpass;//retorna a password antiga
                               },
                               child: Text('Esqueci-me da password!',
                                 style: TextStyle(
@@ -175,25 +175,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       height: 50,
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          if (_formKey.currentState!.validate()) {
+                                          if (_formKey.currentState!.validate()) {//verifica se escreveu o email e a password
                                             setState(() {
-                                              loading = true;
+                                              loading = true;//aparece o widget de loading
                                             });
                                             User? user = await FireAuth.signInUsingEmailPassword(
                                               email: _emailTextController.text,
                                               password: _passwordTextController.text,
                                             );
-                                            if (user != null) {
-                                              ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;
+                                            if (user != null) {//caso consiga fazer login
+                                              ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;//atualiza o logged user
 
-                                              Navigator.of(context).pushReplacement(
+                                              Navigator.of(context).pushReplacement(//vai para a home page
                                                 MaterialPageRoute(
                                                   builder: (context) => Wrapper(),
                                                 ),
                                               );
                                             }
                                             else {
-                                              setState(() {
+                                              setState(() {//caso não faça login volta a pagina normal
                                                 loading = false;
                                               });
                                             }
@@ -233,22 +233,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               text: "Sign up with Google",
                               padding: EdgeInsets.symmetric(horizontal: 70),
                               onPressed: () async {
-                                setState(() {
+                                setState(() {//aparece o widget de loading
                                   loading = true;
                                 });
                                 try {
                                   User? user = await FireAuth.signInWithGoogle();
-                                  if (user != null) {
-                                    ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;
+                                  if (user != null) {//caso consiga fazer login
+                                    ref.read(userUidProvider.notifier).state = FirebaseAuth.instance.currentUser?.uid;//atualiza o logged user
 
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.of(context).pushReplacement(//vai para a home page
                                       MaterialPageRoute(
                                         builder: (context) => Wrapper(),
                                       ),
                                     );
                                   }
                                   else {
-                                    setState(() {
+                                    setState(() {//caso não faça login volta a pagina normal
                                       loading = false;
                                     });
                                   }

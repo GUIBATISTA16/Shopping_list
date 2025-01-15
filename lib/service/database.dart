@@ -3,7 +3,7 @@ import 'package:shopping_list/models/listadecompras.dart';
 
 class Database {
 
-  static Future<void> addLista(ListaDeCompras lista,String uid) async {
+  static Future<void> addLista(ListaDeCompras lista,String uid) async {//adicionar/atualizar lista na BD
     final dbRef = FirebaseDatabase.instance.ref('listas').child(uid).child(lista.id);
     try{
       await dbRef.set(lista.toJson());
@@ -12,7 +12,7 @@ class Database {
     }
   }
 
-  static Future<void> removeLista(String listid, String uid) async{
+  static Future<void> removeLista(String listid, String uid) async{//eliminar lista na DB
     final dbRef = FirebaseDatabase.instance.ref('listas').child(uid).child(listid);
     try{
       await dbRef.remove();
@@ -21,7 +21,7 @@ class Database {
     }
   }
 
-  static void removeListasCompletas(String uid) async{
+  static void removeListasCompletas(String uid) async{//remover listas com tudo comprado e que já tenham 3 dias
     final dbRef = FirebaseDatabase.instance.ref('listas').child(uid);
 
     await dbRef.once().then((val) async{
@@ -34,7 +34,7 @@ class Database {
         DateTime threeDaysAgo = DateTime.now().subtract(Duration(days: 3));//3 dias atras
         for(ListaDeCompras shpl in list){//verificar que listas de compras já têm todos os itens comprados e existem há mais de 3 dias
           if(shpl.itensPorComprar == 0 && shpl.createdDate.isBefore(threeDaysAgo)){
-            await removeLista(shpl.id,uid);
+            await removeLista(shpl.id,uid);//remove
           }
         }
       }
@@ -42,7 +42,7 @@ class Database {
     });
   }
 
-  static Stream<List<ListaDeCompras>> getListasStream(String uid) {
+  static Stream<List<ListaDeCompras>> getListasStream(String uid) {//stream de listas
     final dbRef = FirebaseDatabase.instance.ref('listas').child(uid);
 
     return dbRef.onValue.map((event) {

@@ -26,7 +26,7 @@ class _WrapperState extends ConsumerState<Wrapper> {
   void initState()  {
     super.initState();
     final uid = ref.read(userUidProvider);
-    Database.removeListasCompletas(uid!);
+    Database.removeListasCompletas(uid!);//remove as listas completas de 3 dias ao iniciar a página
     _pageController = PageController(initialPage: pageIndex);
   }
 
@@ -48,8 +48,9 @@ class _WrapperState extends ConsumerState<Wrapper> {
           });
         },
         children: [
-          KeepAlivePage(child: HomePage(pageController: _pageController,)),
-          if(selectedList != null)
+          KeepAlivePage(child: HomePage(pageController: _pageController,)),//manter a página "viva" para não acabar com a stream
+          // ao mudar para a outra página
+          if(selectedList != null)//caso tenha selecionado uma lista
             KeepAlivePage(child: ViewListaDeCompras(pageController: _pageController,))
         ],
       ),

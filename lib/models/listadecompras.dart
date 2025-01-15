@@ -14,7 +14,7 @@ class ListaDeCompras {
 
   ListaDeCompras({required this.id ,required this.nome,required this.createdDate,required this.listItems}) : itensPorComprar = calculateItensPorComprar(listItems);
 
-  static int calculateItensPorComprar(List<Item> listItems){
+  static int calculateItensPorComprar(List<Item> listItems){// calcular Itens por comprar
     int itensPorComprar = 0;
     for(Item item in listItems){
       if(!item.comprado){
@@ -24,7 +24,7 @@ class ListaDeCompras {
     return itensPorComprar;
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {//converter para JSON
     return {
       'nome': nome,
       'createdDate': createdDate.toIso8601String(),
@@ -32,7 +32,7 @@ class ListaDeCompras {
     };
   }
 
-  factory ListaDeCompras.fromJson(MapEntry<dynamic, dynamic> entry) {
+  factory ListaDeCompras.fromJson(MapEntry<dynamic, dynamic> entry) {//coverter de JSON
     final listaData = entry.value as Map<dynamic, dynamic>;
     final listItems = (listaData['listItems'] as List<dynamic>)
         .map((itemData) => Item.fromJson(itemData))
@@ -45,7 +45,7 @@ class ListaDeCompras {
     );
   }
 
-  ListaDeCompras copy() {
+  ListaDeCompras copy() {//gerar uma "deep copy"
     return ListaDeCompras(
       id: id,
       nome: nome,

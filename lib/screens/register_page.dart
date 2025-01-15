@@ -135,8 +135,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      setState(() {
+                    if (_formKey.currentState!.validate()) {//valida os dados
+                      setState(() {//aparece o widget de loading
                         loading = true;
                       });
                       User? user = await FireAuth.registerUsingEmailPassword(
@@ -144,14 +144,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         email: _emailController.text.trim(),
                         password: _passwordController.text.trim(),
                       );
-                      if (user != null) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ),
-                        );
+                      if (user != null) {//caso crie a conta volta á página de login
+                        Navigator.pop(context);
                       } else {
-                        setState(() {
+                        setState(() {//caso não consiga criar a conta a página volta ao normal
                           loading = false;
                         });
                       }

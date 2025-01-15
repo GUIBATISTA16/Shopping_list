@@ -10,7 +10,7 @@ class Item {
 
   Item({required this.nome,required this.tipo,required this.quantidade,required this.comprado});
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {//converter para JSON
     return {
       'nome': nome,
       'tipo': tipo,
@@ -19,7 +19,7 @@ class Item {
     };
   }
 
-  factory Item.fromJson(Map<dynamic, dynamic> json) {
+  factory Item.fromJson(Map<dynamic, dynamic> json) {//converter de JSON
     return Item(
       nome: json['nome'] as String,
       tipo: json['tipo'] as String,
@@ -28,7 +28,7 @@ class Item {
     );
   }
 
-  Item copy() {
+  Item copy() {//gerar uma "deep copy"
     return Item(
       nome: nome,
       tipo: tipo,
