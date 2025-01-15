@@ -2,12 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shopping_list/screens/homepage.dart';
+import 'package:shopping_list/service/database.dart';
 import 'package:shopping_list/widget/keepalive.dart';
 
 import '../../globais/colorsglobal.dart';
-import '../../globais/widgetglobal.dart';
 import '../../riverpod/selectedlistprovider.dart';
 import '../../screens/viewlist.dart';
+import '../standalonewidgets/textoprincipal.dart';
 
 class Wrapper extends ConsumerStatefulWidget {
   const Wrapper({super.key});
@@ -23,6 +24,7 @@ class _WrapperState extends ConsumerState<Wrapper> {
   @override
   void initState()  {
     super.initState();
+    Database.removeListasCompletas();
     _pageController = PageController(initialPage: pageIndex);
   }
 
@@ -46,7 +48,7 @@ class _WrapperState extends ConsumerState<Wrapper> {
         children: [
           KeepAlivePage(child: HomePage(pageController: _pageController,)),
           if(selectedList != null)
-            KeepAlivePage(child: ViewListaDeCompras())
+            KeepAlivePage(child: ViewListaDeCompras(pageController: _pageController,))
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -55,11 +57,11 @@ class _WrapperState extends ConsumerState<Wrapper> {
         unselectedItemColor: Colors.white30,
         items: [
           const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
+            icon: Icon(Icons.list_alt),
             label: 'Listas de Compras ',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
+            icon: Icon(Icons.shopping_basket),
             label: 'Lista Selecionada ',
           ),
         ],

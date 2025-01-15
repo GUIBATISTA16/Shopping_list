@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/globais/objectglobal.dart';
 
-import '../screens/login.dart';
+import '../../screens/login.dart';
 
 class Logout extends StatelessWidget {
   final double size;

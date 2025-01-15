@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 
 import '../globais/colorsglobal.dart';
-import '../globais/widgetglobal.dart';
 import '../riverpod/selectedlistprovider.dart';
 import '../service/database.dart';
+import '../widget/standalonewidgets/textoprincipal.dart';
 
 class ViewListaDeCompras extends ConsumerStatefulWidget {
-  const ViewListaDeCompras({super.key});
+  final PageController pageController;
+  const ViewListaDeCompras({super.key, required this.pageController});
 
   @override
   ViewListaDeComprasState createState() => ViewListaDeComprasState();
@@ -23,7 +24,16 @@ class ViewListaDeComprasState extends ConsumerState<ViewListaDeCompras> {
     String formattedDate = DateFormat('dd/MM/yyyy').format(selectedList!.createdDate);
     return Scaffold(
       appBar: AppBar(
-        //leading: BackButao(color: textoPrincipal),TODO
+        leading: BackButton(
+          onPressed: (){
+            widget.pageController.animateToPage(
+              0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+          color: textoPrincipal
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,54 +44,86 @@ class ViewListaDeComprasState extends ConsumerState<ViewListaDeCompras> {
         backgroundColor: principal,
       ),
       backgroundColor: fundoMenus,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: selectedList.listItems.length,
-            itemBuilder: (context,itemIndex){
-              return Row(
-                children: [
-                  SizedBox(
-                      width: 30,
-                      child: Text(
-                        selectedList.listItems[itemIndex].quantidade.toString()
-                        ,textAlign: TextAlign.left,
-                      )
-                  ),
-                  Expanded(child: SizedBox()),
-                  SizedBox(
-                      width: 100,
-                      child: Text(
-                        selectedList.listItems[itemIndex].tipo
-                        ,textAlign: TextAlign.left,
-                      )
-                  ),
-                  SizedBox(
-                      width: 100,
-                      child: Text(
-                        selectedList.listItems[itemIndex].nome
-                        ,textAlign: TextAlign.left,
-                      )
-                  ),
-                  Expanded(child: SizedBox()),
-                  Checkbox(
-                    checkColor: textoPrincipal,
-                    activeColor: principal,
-                    value: selectedList.listItems[itemIndex].comprado,
-                    onChanged: (bool? value) async{
-                      value! ? selectedList.itensPorComprar-- : selectedList.itensPorComprar++;
-                      setState(() {
-                        selectedList.listItems[itemIndex].comprado = value;
-                      });
-                      await Database.addLista(selectedList);
-                    },
-                  )
-                ],
-              );
-            }
-        ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(child: Text('Qtd.'),width: 30,),
+                Expanded(child: SizedBox()),
+                SizedBox(child: Text('Tipo'),width: 100,),
+                SizedBox(child: Text('Item'),width: 100,),
+                Expanded(child: SizedBox()),
+                Text('Comprado')
+              ],
+            ),
+          ),
+          const Divider(
+            color: Colors.grey,
+            height: 2,
+            thickness: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: selectedList.listItems.length,
+              itemBuilder: (context,itemIndex){
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                            width: 30,
+                            child: Text(
+                              selectedList.listItems[itemIndex].quantidade.toString()
+                              ,textAlign: TextAlign.left,
+                            )
+                        ),
+                        Expanded(child: SizedBox()),
+                        SizedBox(
+                            width: 100,
+                            child: Text(
+                              selectedList.listItems[itemIndex].tipo
+                              ,textAlign: TextAlign.left,
+                            )
+                        ),
+                        SizedBox(
+                            width: 100,
+                            child: Text(
+                              selectedList.listItems[itemIndex].nome
+                              ,textAlign: TextAlign.left,
+                            )
+                        ),
+                        Expanded(child: SizedBox()),
+                        Checkbox(
+                          checkColor: textoPrincipal,
+                          activeColor: principal,
+                          value: selectedList.listItems[itemIndex].comprado,
+                          onChanged: (bool? value) async{
+                            value! ? selectedList.itensPorComprar-- : selectedList.itensPorComprar++;
+                            setState(() {
+                              selectedList.listItems[itemIndex].comprado = value;
+                            });
+                            await Database.addLista(selectedList);
+                          },
+                        )
+                      ],
+                    ),
+                    const Divider(
+                      color: Colors.grey,
+                      height: 2,
+                      thickness: 1,
+                    ),
+                  ],
+                );
+              }
+            ),
+          ),
+        ],
       ),
     );
   }

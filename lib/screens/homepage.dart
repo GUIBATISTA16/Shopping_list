@@ -12,11 +12,12 @@ import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
 import '../globais/objectglobal.dart';
 import '../globais/validator.dart';
-import '../globais/widgetglobal.dart';
 import '../riverpod/selectedlistprovider.dart';
 import '../riverpod/streamprovider.dart';
-import '../widget/loading.dart';
-import '../widget/logout.dart';
+import '../widget/standalonewidgets/backbutton.dart';
+import '../widget/standalonewidgets/loading.dart';
+import '../widget/standalonewidgets/logout.dart';
+import '../widget/standalonewidgets/textoprincipal.dart';
 import 'login.dart';
 
 
@@ -141,8 +142,8 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Necessário para AutomaticKeepAliveClientMixin
-    final listasAsync = ref.watch(listasStreamProvider);
+    super.build(context);
+    final listasDeListasDeCompras = ref.watch(listasStreamProvider);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -178,7 +179,7 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
         Expanded(
           child: Container(
             color: fundoMenus,
-            child: listasAsync.when(
+            child: listasDeListasDeCompras.when(
               data: (list) {
                 if (list.isEmpty) {
                   return const Center(child: Text('Nenhuma Lista'));

@@ -28,6 +28,15 @@ class Item {
     );
   }
 
+  Item copy() {
+    return Item(
+      nome: nome,
+      tipo: tipo,
+      quantidade: quantidade,
+      comprado: comprado,
+    );
+  }
+
   @override
   String toString() {
     return 'Item{nome: $nome, tipo: $tipo, quantidade: $quantidade, comprado: $comprado}';

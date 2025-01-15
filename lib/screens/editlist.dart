@@ -4,11 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:shopping_list/globais/colorsglobal.dart';
 import 'package:shopping_list/globais/functionsglobal.dart';
 import 'package:shopping_list/globais/objectglobal.dart';
-import 'package:shopping_list/globais/widgetglobal.dart';
 import 'package:shopping_list/models/item.dart';
 import 'package:shopping_list/models/listadecompras.dart';
 import 'package:shopping_list/screens/homepage.dart';
 import 'package:shopping_list/service/database.dart';
+
+import '../widget/standalonewidgets/backbutton.dart';
+import '../widget/standalonewidgets/textoprincipal.dart';
 
 class EditLista extends StatefulWidget {
   final ListaDeCompras listaDeCompras;
@@ -21,14 +23,17 @@ class EditLista extends StatefulWidget {
 class _EditListaState extends State<EditLista> {
 
 
-  List<TextEditingController> _quantityControllers = [];
-  List<TextEditingController> _nameControllers = [];
-  final List<String> _units = ["kg", "g", "L", "mL", "Pacotes", "Meia Duzia", "Duzia"];
+  final List<TextEditingController> _quantityControllers = [];
+  final List<TextEditingController> _nameControllers = [];
+  final List<String> tipo = ["kg", "g", "L", "mL", "Pacotes", "Meia Duzia", "Duzia", "Latas", "Garrafas"];
   final ScrollController _scrollController = ScrollController();
+
+  late ListaDeCompras listaAAlterar;
 
   @override
   void initState() {
     super.initState();
+    listaAAlterar = widget.listaDeCompras.copy();
     for (Item item in widget.listaDeCompras.listItems) {
       _quantityControllers.add(TextEditingController(text: item.quantidade.toString()));
       _nameControllers.add(TextEditingController(text: item.nome));
@@ -47,10 +52,10 @@ class _EditListaState extends State<EditLista> {
     super.dispose();
   }
 
-  void _addItem() {
+  void _addItem(ListaDeCompras lista) {
     setState(() {
       Item item = Item(nome: "", tipo: "kg", quantidade: 0, comprado: false);
-      widget.listaDeCompras.listItems.add(item);
+      lista.listItems.add(item);
       print(item);
       _quantityControllers.add(TextEditingController(text: "0"));
       _nameControllers.add(TextEditingController(text: ""));
@@ -65,9 +70,9 @@ class _EditListaState extends State<EditLista> {
     });
   }
 
-  void _removeItem(int index) {
+  void _removeItem(int index, ListaDeCompras lista) {
     setState(() {
-      widget.listaDeCompras.listItems.removeAt(index);
+      lista.listItems.removeAt(index);
       _quantityControllers[index].dispose();
       _nameControllers[index].dispose();
       _quantityControllers.removeAt(index);
@@ -77,7 +82,8 @@ class _EditListaState extends State<EditLista> {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = DateFormat('dd/MM/yyyy').format(widget.listaDeCompras.createdDate);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(listaAAlterar.createdDate);
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButao(color: textoPrincipal),
@@ -93,16 +99,16 @@ class _EditListaState extends State<EditLista> {
           ),
           IconButton(
             onPressed: () async {
-              await Database.removeLista(widget.listaDeCompras.id);
+              await Database.removeLista(listaAAlterar.id);
               Navigator.pop(context);
-            }, 
+            },
             icon: Icon(Icons.delete_forever, color: Colors.red, size: 35,)
           ),
         ],
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextoPrincipal(text: widget.listaDeCompras.nome,fontSize: 24,),
+            TextoPrincipal(text: listaAAlterar.nome,fontSize: 24,),
             TextoPrincipal(text: formattedDate, fontSize: 19,)
           ],
         ),
@@ -131,17 +137,17 @@ class _EditListaState extends State<EditLista> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: widget.listaDeCompras.listItems.length,
+                    itemCount: listaAAlterar.listItems.length,
                     itemBuilder: (context, index) {
-                      bool checkBox = widget.listaDeCompras.listItems[index].comprado;
+                      bool checkBox = listaAAlterar.listItems[index].comprado;
                       return Dismissible(//deslizar para remover item da lista
-                        key: Key(widget.listaDeCompras.listItems[index].hashCode.toString()),
+                        key: Key(listaAAlterar.listItems[index].hashCode.toString()),
                         background: Container(color: Colors.red,child: Align(child: Icon(Icons.delete_forever),alignment: Alignment.centerLeft,),),
                         secondaryBackground: Container(color: Colors.red,child: Align(child: Icon(Icons.delete_forever),alignment: Alignment.centerRight,),),
                         onDismissed: (_){
-                          showCustomSnackBar(context, 'Item ${widget.listaDeCompras.listItems[index].nome} removido');
+                          showCustomSnackBar(context, 'Item ${listaAAlterar.listItems[index].nome} removido');
                           setState(() {
-                            _removeItem(index);
+                            _removeItem(index,listaAAlterar);
                           });
                         },
                         child: Padding(
@@ -170,7 +176,7 @@ class _EditListaState extends State<EditLista> {
                                     contentPadding: const EdgeInsets.symmetric(vertical: 4),
                                   ),
                                   onChanged: (val){
-                                    widget.listaDeCompras.listItems[index].quantidade = int.parse(val) ;
+                                    listaAAlterar.listItems[index].quantidade = int.parse(val) ;
                                   },
                                 ),
                               ),
@@ -178,7 +184,7 @@ class _EditListaState extends State<EditLista> {
                               SizedBox(
                                 width: 120,
                                 child: DropdownButtonFormField<String>(
-                                  value: widget.listaDeCompras.listItems[index].tipo,
+                                  value: listaAAlterar.listItems[index].tipo,
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                       borderSide: BorderSide(color: Colors.black),
@@ -196,10 +202,10 @@ class _EditListaState extends State<EditLista> {
                                   ),
                                   onChanged: (value) {
                                     setState(() {
-                                      widget.listaDeCompras.listItems[index].tipo = value!;
+                                      listaAAlterar.listItems[index].tipo = value!;
                                     });
                                   },
-                                  items: _units.map((unit) {
+                                  items: tipo.map((unit) {
                                     return DropdownMenuItem<String>(
                                       value: unit,
                                       child: Text(unit),
@@ -228,7 +234,7 @@ class _EditListaState extends State<EditLista> {
                                     contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                                   ),
                                   onChanged: (val){
-                                    widget.listaDeCompras.listItems[index].nome = val;
+                                    listaAAlterar.listItems[index].nome = val;
                                   },
                                 ),
                               ),
@@ -239,7 +245,7 @@ class _EditListaState extends State<EditLista> {
                                 value: checkBox,
                                 onChanged: (bool? value) {
                                   setState(() {
-                                    widget.listaDeCompras.listItems[index].comprado = value!;
+                                    listaAAlterar.listItems[index].comprado = value!;
                                   });
                                 },
                               )
@@ -251,7 +257,7 @@ class _EditListaState extends State<EditLista> {
                   ),
                   IconButton(
                       onPressed: (){
-                        _addItem();
+                        _addItem(listaAAlterar);
                       },
                       icon: Icon(Icons.add_circle_outline, color:  principal,size: 35,)
                   ),
@@ -263,12 +269,12 @@ class _EditListaState extends State<EditLista> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () async {
-                ListaDeCompras lista = widget.listaDeCompras;
+                ListaDeCompras lista = listaAAlterar;
                 lista.listItems.removeWhere((item) => (item.quantidade <= 0));
                 lista.listItems.removeWhere((item) => (item.nome.trim() == ""));
                 if(lista.listItems.isEmpty){
                   showCustomSnackBar(context, 'Lista Sem Itens');
-                  await Database.removeLista(widget.listaDeCompras.id);
+                  await Database.removeLista(listaAAlterar.id);
                   Navigator.pop(context);
                   return;
                 }

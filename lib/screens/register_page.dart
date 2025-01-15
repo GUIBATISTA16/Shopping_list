@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/stylesglobal.dart';
 import '../globais/validator.dart';
-import '../globais/widgetglobal.dart';
 import '../service/auth.dart';
-import '../widget/loading.dart';
+import '../widget/standalonewidgets/loading.dart';
+import '../widget/standalonewidgets/textoprincipal.dart';
 import 'login.dart';
 
 class RegisterPage extends StatefulWidget {

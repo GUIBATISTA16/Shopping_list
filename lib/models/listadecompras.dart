@@ -2,7 +2,7 @@ import 'package:shopping_list/models/item.dart';
 
 class ListaDeCompras {
 
-  String id;
+  final String id;
 
   String nome;
 
@@ -40,8 +40,17 @@ class ListaDeCompras {
     return ListaDeCompras(
       id: entry.key as String,
       nome: listaData['nome'] as String,
-      createdDate: DateTime.parse(listaData['createdDate'] as String),
+      createdDate: DateTime.parse(listaData['createdDate']),
       listItems: listItems,
+    );
+  }
+
+  ListaDeCompras copy() {
+    return ListaDeCompras(
+      id: id,
+      nome: nome,
+      createdDate: createdDate,
+      listItems: listItems.map((item) => item.copy()).toList(),
     );
   }
 

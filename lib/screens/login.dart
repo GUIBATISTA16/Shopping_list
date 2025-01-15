@@ -13,9 +13,10 @@ import '../firebase_options.dart';
 import '../globais/colorsglobal.dart';
 import '../globais/functionsglobal.dart';
 import '../globais/validator.dart';
-import '../globais/widgetglobal.dart';
 import '../service/auth.dart';
-import '../widget/loading.dart';
+import '../widget/standalonewidgets/containerbordasfinas.dart';
+import '../widget/standalonewidgets/loading.dart';
+import '../widget/standalonewidgets/textoprincipal.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
