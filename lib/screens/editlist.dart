@@ -171,6 +171,11 @@ class _EditListaState extends ConsumerState<EditLista> {
                 Text('Comprado')
               ],
             ),
+            const Divider(
+              color: Colors.grey,
+              height: 2,
+              thickness: 1,
+            ),
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,

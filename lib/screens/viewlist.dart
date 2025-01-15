@@ -67,62 +67,66 @@ class ViewListaDeComprasState extends ConsumerState<ViewListaDeCompras> {
             height: 2,
             thickness: 1,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: selectedList.listItems.length,
-              itemBuilder: (context,itemIndex){
-                return Column(
-                  children: [
-                    Row(
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: selectedList.listItems.length,
+                  itemBuilder: (context,itemIndex){
+                    return Column(
                       children: [
-                        SizedBox(
-                            width: 30,
-                            child: Text(
-                              selectedList.listItems[itemIndex].quantidade.toString()
-                              ,textAlign: TextAlign.left,
+                        Row(
+                          children: [
+                            SizedBox(
+                                width: 30,
+                                child: Text(
+                                  selectedList.listItems[itemIndex].quantidade.toString()
+                                  ,textAlign: TextAlign.left,
+                                )
+                            ),
+                            Expanded(child: SizedBox()),
+                            SizedBox(
+                                width: 100,
+                                child: Text(
+                                  selectedList.listItems[itemIndex].tipo
+                                  ,textAlign: TextAlign.left,
+                                )
+                            ),
+                            SizedBox(
+                                width: 100,
+                                child: Text(
+                                  selectedList.listItems[itemIndex].nome
+                                  ,textAlign: TextAlign.left,
+                                )
+                            ),
+                            Expanded(child: SizedBox()),
+                            Checkbox(
+                              checkColor: textoPrincipal,
+                              activeColor: principal,
+                              value: selectedList.listItems[itemIndex].comprado,
+                              onChanged: (bool? value) async{
+                                value! ? selectedList.itensPorComprar-- : selectedList.itensPorComprar++;
+                                setState(() {
+                                  selectedList.listItems[itemIndex].comprado = value;
+                                });
+                                await Database.addLista(selectedList,uid!);
+                              },
                             )
+                          ],
                         ),
-                        Expanded(child: SizedBox()),
-                        SizedBox(
-                            width: 100,
-                            child: Text(
-                              selectedList.listItems[itemIndex].tipo
-                              ,textAlign: TextAlign.left,
-                            )
+                        const Divider(
+                          color: Colors.grey,
+                          height: 2,
+                          thickness: 1,
                         ),
-                        SizedBox(
-                            width: 100,
-                            child: Text(
-                              selectedList.listItems[itemIndex].nome
-                              ,textAlign: TextAlign.left,
-                            )
-                        ),
-                        Expanded(child: SizedBox()),
-                        Checkbox(
-                          checkColor: textoPrincipal,
-                          activeColor: principal,
-                          value: selectedList.listItems[itemIndex].comprado,
-                          onChanged: (bool? value) async{
-                            value! ? selectedList.itensPorComprar-- : selectedList.itensPorComprar++;
-                            setState(() {
-                              selectedList.listItems[itemIndex].comprado = value;
-                            });
-                            await Database.addLista(selectedList,uid!);
-                          },
-                        )
                       ],
-                    ),
-                    const Divider(
-                      color: Colors.grey,
-                      height: 2,
-                      thickness: 1,
-                    ),
-                  ],
-                );
-              }
+                    );
+                  }
+                ),
+              ),
             ),
           ),
         ],
