@@ -21,7 +21,7 @@ class Database {
     }
   }
 
-  static void removeListasCompletas(String uid) async{//remover listas com tudo comprado e que já tenham 3 dias
+  static void removeListasCompletas(String uid) async{//remover listas com tudo comprado e que já tenham 7 dias
     final dbRef = FirebaseDatabase.instance.ref('listas').child(uid);
 
     await dbRef.once().then((val) async{
@@ -31,8 +31,8 @@ class Database {
         final list = data.entries
             .map(ListaDeCompras.fromJson)
             .toList();
-        DateTime threeDaysAgo = DateTime.now().subtract(Duration(days: 3));//3 dias atras
-        for(ListaDeCompras shpl in list){//verificar que listas de compras já têm todos os itens comprados e existem há mais de 3 dias
+        DateTime threeDaysAgo = DateTime.now().subtract(Duration(days: 7));//7 dias atras
+        for(ListaDeCompras shpl in list){//verificar que listas de compras já têm todos os itens comprados e existem há mais de 7 dias
           if(shpl.itensPorComprar == 0 && shpl.createdDate.isBefore(threeDaysAgo)){
             await removeLista(shpl.id,uid);//remove
           }

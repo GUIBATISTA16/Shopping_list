@@ -26,7 +26,7 @@ class _WrapperState extends ConsumerState<Wrapper> {
   void initState()  {
     super.initState();
     final uid = ref.read(userUidProvider);
-    Database.removeListasCompletas(uid!);//remove as listas completas de 3 dias ao iniciar a página
+    Database.removeListasCompletas(uid!);//remove as listas completas de 7 dias ao iniciar a página
     _pageController = PageController(initialPage: pageIndex);
   }
 

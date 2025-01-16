@@ -28,7 +28,7 @@ class _EditListaState extends ConsumerState<EditLista> {
   final _nomeListaController = TextEditingController();
   final List<TextEditingController> _quantityControllers = [];
   final List<TextEditingController> _nameControllers = [];
-  final List<String> tipo = ["kg", "g", "L", "mL", "Pacotes", "Meia Duzia", "Duzia", "Latas", "Garrafas"];
+  final List<String> tipo = ["","kg", "g", "L", "mL", "Pacotes", "Meia Duzia", "Duzia", "Latas", "Garrafas"];
   final ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
   
@@ -60,7 +60,7 @@ class _EditListaState extends ConsumerState<EditLista> {
 
   void _addItem(ListaDeCompras lista) {//adiciona um item á lista e os seus controladores
     setState(() {
-      Item item = Item(nome: "", tipo: "kg", quantidade: 0, comprado: false);
+      Item item = Item(nome: "", tipo: "", quantidade: 0, comprado: false);
       lista.listItems.add(item);
       print(item);
       _quantityControllers.add(TextEditingController(text: "0"));

@@ -65,6 +65,7 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
                   child: TextFormField(
                     validator: (value) => Validator.validateName(name: value),
                     controller: _nomeController,
+                    textCapitalization: TextCapitalization.sentences,
                     cursorColor: preto,
                     decoration: InputDecoration(
                       labelText: 'Nome da Lista',
