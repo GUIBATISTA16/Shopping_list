@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shopping_list/globais/functionsglobal.dart';
 import 'package:shopping_list/screens/homepage.dart';
 import 'package:shopping_list/service/database.dart';
 import 'package:shopping_list/widget/keepalive.dart';
@@ -70,7 +71,7 @@ class _WrapperState extends ConsumerState<Wrapper> {
         ],
         currentIndex: pageIndex,
         onTap: (index) {
-          if((index == 1 && selectedList != null) || index == 0){
+          if((index == 1 && selectedList != null) || index == 0){//caso selecione a página da lista selecionada verifica mesmo se tem lista selecionada
             setState(() {
               pageIndex = index;
             });
@@ -79,6 +80,9 @@ class _WrapperState extends ConsumerState<Wrapper> {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
             );
+          }
+          else{
+            showCustomSnackBar(context, 'Não tem uma lista selecionada');
           }
         },
       ),
